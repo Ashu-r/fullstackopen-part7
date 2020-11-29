@@ -1,13 +1,5 @@
 import React, { useState } from 'react';
-import {
-	BrowserRouter as Router,
-	Switch,
-	Route,
-	Link,
-	Redirect,
-	useRouteMatch,
-	useHistory,
-} from 'react-router-dom';
+import { Switch, Route, Link, useRouteMatch } from 'react-router-dom';
 
 const Menu = () => {
 	const padding = {
@@ -33,7 +25,11 @@ const AnecdoteList = ({ anecdotes }) => (
 		<h2>Anecdotes</h2>
 		<ul>
 			{anecdotes.map((anecdote) => (
-				<li key={anecdote.id}>{anecdote.content}</li>
+				<li key={anecdote.id}>
+					<Link to={`/anecdotes/${anecdote.id}`}>
+						{anecdote.content}
+					</Link>
+				</li>
 			))}
 		</ul>
 	</div>
@@ -125,6 +121,31 @@ const CreateNew = (props) => {
 	);
 };
 
+const Anecdote = ({ anecdote }) => {
+	console.log(anecdote);
+	return (
+		<div>
+			<h2>{anecdote.content}</h2>
+			<div>{anecdote.info}</div>
+			<div>
+				<strong>{anecdote.votes} votes</strong>
+			</div>
+			<div>-{anecdote.author}</div>
+		</div>
+	);
+};
+
+const Notification = ({ msg }) => {
+	const style = {
+		height: '20px',
+		border: '2px solid black',
+	};
+	if (msg) {
+		return <div style={style}>{msg}</div>;
+	}
+	return null;
+};
+
 const App = () => {
 	const [anecdotes, setAnecdotes] = useState([
 		{
@@ -149,6 +170,10 @@ const App = () => {
 	const addNew = (anecdote) => {
 		anecdote.id = (Math.random() * 10000).toFixed(0);
 		setAnecdotes(anecdotes.concat(anecdote));
+		setNotification(`${anecdote.content} by ${anecdote.author} added.`);
+		setTimeout(() => {
+			setNotification('');
+		}, 10000);
 	};
 
 	const anecdoteById = (id) => anecdotes.find((a) => a.id === id);
@@ -164,11 +189,20 @@ const App = () => {
 		setAnecdotes(anecdotes.map((a) => (a.id === id ? voted : a)));
 	};
 
+	const match = useRouteMatch('/anecdotes/:id');
+	const anecdote = match
+		? anecdotes.find((ane) => ane.id === match.params.id)
+		: null;
+
 	return (
 		<div>
 			<h1>Software anecdotes</h1>
 			<Menu />
+			<Notification msg={notification} />
 			<Switch>
+				<Route path='/anecdotes/:id'>
+					<Anecdote anecdote={anecdote} />
+				</Route>
 				<Route path='/about'>
 					<About />
 				</Route>
