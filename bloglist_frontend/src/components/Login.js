@@ -1,36 +1,31 @@
-import React from 'react';
-import blogService from '../services/blogs';
-import loginService from '../services/login';
+import React, { useState } from 'react';
+import { login } from '../reducers/userReducer';
+import { newNotification } from '../reducers/notificationReducer';
+import { useDispatch } from 'react-redux';
 
-const Login = ({
-	username,
-	password,
-	setUsername,
-	setPassword,
-	setUser,
-	setErrorMessage,
-}) => {
+const Login = () => {
+	const [username, setUsername] = useState('');
+	const [password, setPassword] = useState('');
+	const dispatch = useDispatch();
+
 	const handleLogin = async (event) => {
 		event.preventDefault();
 
 		try {
-			const user = await loginService.login({
-				username,
-				password,
-			});
+			dispatch(
+				login({
+					username,
+					password,
+				})
+			);
 
-			blogService.setToken(user.token);
-
-			window.localStorage.setItem('loggedUser', JSON.stringify(user));
-
-			setUser(user);
 			setUsername('');
 			setPassword('');
 		} catch (exception) {
 			console.log(exception);
-			setErrorMessage('Wrong credentials');
+			dispatch(newNotification('Wrong credentials'));
 			setTimeout(() => {
-				setErrorMessage(null);
+				dispatch(newNotification(null));
 			}, 5000);
 		}
 	};
@@ -38,23 +33,11 @@ const Login = ({
 		<form onSubmit={handleLogin}>
 			<div>
 				username
-				<input
-					id='username'
-					type='text'
-					value={username}
-					name='Username'
-					onChange={({ target }) => setUsername(target.value)}
-				/>
+				<input id='username' type='text' value={username} name='Username' onChange={({ target }) => setUsername(target.value)} />
 			</div>
 			<div>
 				password
-				<input
-					id='password'
-					type='password'
-					value={password}
-					name='Password'
-					onChange={({ target }) => setPassword(target.value)}
-				/>
+				<input id='password' type='password' value={password} name='Password' onChange={({ target }) => setPassword(target.value)} />
 			</div>
 			<button id='login-button' type='submit'>
 				login

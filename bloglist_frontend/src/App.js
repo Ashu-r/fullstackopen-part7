@@ -7,18 +7,15 @@ import Notification from './components/Notification';
 import NewBlogForm from './components/NewBlogForm';
 import Togglable from './components/Togglable';
 import { initializeBlogs } from './reducers/blogReducer';
+import { autoLogin, logout } from './reducers/userReducer';
 
 const App = () => {
 	const dispatch = useDispatch();
 
-	const [username, setUsername] = useState('');
-	const [password, setPassword] = useState('');
-	const [user, setUser] = useState(null);
+	const user = useSelector((state) => state.user);
 	const [errorMessage, setErrorMessage] = useState(null);
-	const [blogChange, setBlogChange] = useState(false);
 
 	const blogFormRef = useRef();
-
 	useEffect(() => {
 		dispatch(initializeBlogs());
 	}, [dispatch]);
@@ -28,24 +25,24 @@ const App = () => {
 		const loggedUserJSON = window.localStorage.getItem('loggedUser');
 		if (loggedUserJSON) {
 			const user = JSON.parse(loggedUserJSON);
-			setUser(user);
+			dispatch(autoLogin(user));
 			blogService.setToken(user.token);
 		}
 	}, []);
+
+	useEffect(() => {
+		if (user) {
+			window.localStorage.setItem('loggedUser', JSON.stringify(user));
+			blogService.setToken(user.token);
+		}
+	}, [user]);
 
 	return (
 		<div>
 			<Notification errorMessage={errorMessage} />
 			{user === null ? (
 				<Togglable buttonLabel='login'>
-					<Login
-						username={username}
-						password={password}
-						setUsername={setUsername}
-						setPassword={setPassword}
-						setUser={setUser}
-						setErrorMessage={setErrorMessage}
-					/>
+					<Login />
 				</Togglable>
 			) : (
 				<div>
@@ -53,7 +50,7 @@ const App = () => {
 						{user.name} logged-in{' '}
 						<button
 							onClick={() => {
-								setUser(null);
+								dispatch(logout());
 								window.localStorage.removeItem('loggedUser');
 							}}
 						>
@@ -62,7 +59,7 @@ const App = () => {
 					</p>
 
 					<Togglable buttonLabel='New blog' ref={blogFormRef}>
-						<NewBlogForm blogChange={blogChange} setBlogChange={setBlogChange} setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
+						<NewBlogForm setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
 					</Togglable>
 				</div>
 			)}
