@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { login } from '../reducers/userReducer';
+import { login } from '../reducers/loginReducer';
 import { newNotification } from '../reducers/notificationReducer';
 import { useDispatch } from 'react-redux';
 

@@ -3,11 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import Login from './components/Login';
+import Users from './components/Users';
+import User from './components/User';
 import Notification from './components/Notification';
 import NewBlogForm from './components/NewBlogForm';
 import Togglable from './components/Togglable';
 import { initializeBlogs } from './reducers/blogReducer';
-import { autoLogin, logout } from './reducers/userReducer';
+import { autoLogin, logout } from './reducers/loginReducer';
+import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -18,7 +21,7 @@ const App = () => {
 	const blogFormRef = useRef();
 	useEffect(() => {
 		dispatch(initializeBlogs());
-	}, [dispatch]);
+	}, []);
 	const blogs = useSelector((store) => store.blogs);
 
 	useEffect(() => {
@@ -36,6 +39,8 @@ const App = () => {
 			blogService.setToken(user.token);
 		}
 	}, [user]);
+
+	const padding = { padding: 5 };
 
 	return (
 		<div>
@@ -63,12 +68,33 @@ const App = () => {
 					</Togglable>
 				</div>
 			)}
-			<h2>blogs</h2>
-			{blogs
-				.sort((a, b) => b.likes - a.likes)
-				.map((blog) => (
-					<Blog key={blog.id} blog={blog} user={user} />
-				))}
+			<Router>
+				<div>
+					<Link style={padding} to='/'>
+						Home
+					</Link>
+					<Link style={padding} to='/users'>
+						Users
+					</Link>
+				</div>
+
+				<Switch>
+					<Route path='/users/:id'>
+						<User />
+					</Route>
+					<Route path='/users'>
+						<Users />
+					</Route>
+					<Route path='/'>
+						<h2>blogs</h2>
+						{blogs
+							.sort((a, b) => b.likes - a.likes)
+							.map((blog) => (
+								<Blog key={blog.id} blog={blog} user={user} />
+							))}
+					</Route>
+				</Switch>
+			</Router>
 		</div>
 	);
 };
