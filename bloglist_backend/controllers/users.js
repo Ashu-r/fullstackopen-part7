@@ -12,10 +12,7 @@ usersRouter.post('/', async (request, response) => {
 	const passRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,20}$/;
 	if (body.password.match(passRegex)) {
 		const saltRounds = 10;
-		const passwordHash = await bcrypt.hash(
-			body.password,
-			saltRounds
-		);
+		const passwordHash = await bcrypt.hash(body.password, saltRounds);
 
 		const user = new User({
 			username: body.username,
@@ -28,8 +25,7 @@ usersRouter.post('/', async (request, response) => {
 		response.json(savedUser);
 	} else {
 		response.json({
-			error:
-				'Password should contain 1 uppercase, 1 lowercase, 1 digit and should be in between 8 to 20 characters long',
+			error: 'Password should contain 1 uppercase, 1 lowercase, 1 digit and should be in between 8 to 20 characters long',
 		});
 	}
 });
