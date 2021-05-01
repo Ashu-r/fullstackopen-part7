@@ -16,9 +16,11 @@ export const addLike = (blog) => {
 			...blog,
 			likes: blog.likes + 1,
 		});
+		console.log(blog);
+		console.log(likedBlog);
 		dispatch({
 			type: 'ADD_LIKE',
-			likedBlog,
+			payload: { ...likedBlog, user: blog.user },
 		});
 	};
 };
@@ -53,7 +55,7 @@ const reducer = (state = [], action) => {
 		case 'INIT_BLOGS':
 			return action.data;
 		case 'ADD_LIKE': {
-			const { likedBlog } = action;
+			const likedBlog = action.payload;
 			return state.map((blog) => (blog.id !== likedBlog.id ? blog : likedBlog));
 		}
 		case 'DELETE_BLOG': {

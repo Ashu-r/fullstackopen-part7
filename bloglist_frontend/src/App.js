@@ -40,6 +40,12 @@ const App = () => {
 		}
 	}, [user]);
 
+	const blogStyle = {
+		padding: '15px',
+		border: '2px solid #5C6BC0',
+		// display:'flex',
+		// 'justify-content': 'flex-start'
+	};
 	const padding = { padding: 5 };
 
 	return (
@@ -79,6 +85,9 @@ const App = () => {
 				</div>
 
 				<Switch>
+					<Route path='/blogs/:id'>
+						<Blog />
+					</Route>
 					<Route path='/users/:id'>
 						<User />
 					</Route>
@@ -90,7 +99,9 @@ const App = () => {
 						{blogs
 							.sort((a, b) => b.likes - a.likes)
 							.map((blog) => (
-								<Blog key={blog.id} blog={blog} user={user} />
+								<div style={blogStyle} key={blog.id}>
+									<Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+								</div>
 							))}
 					</Route>
 				</Switch>
