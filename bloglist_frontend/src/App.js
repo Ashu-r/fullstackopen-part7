@@ -51,38 +51,41 @@ const App = () => {
 	return (
 		<div>
 			<Notification errorMessage={errorMessage} />
-			{user === null ? (
-				<Togglable buttonLabel='login'>
-					<Login />
-				</Togglable>
-			) : (
-				<div>
-					<p>
-						{user.name} logged-in{' '}
-						<button
-							onClick={() => {
-								dispatch(logout());
-								window.localStorage.removeItem('loggedUser');
-							}}
-						>
-							Log Out
-						</button>
-					</p>
-
-					<Togglable buttonLabel='New blog' ref={blogFormRef}>
-						<NewBlogForm setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
-					</Togglable>
-				</div>
-			)}
 			<Router>
-				<div>
-					<Link style={padding} to='/'>
-						Home
-					</Link>
-					<Link style={padding} to='/users'>
-						Users
-					</Link>
-				</div>
+				{user === null ? (
+					<div>
+						<Link style={padding} to='/'>
+							Home
+						</Link>
+						<Link style={padding} to='/users'>
+							Users
+						</Link>
+
+						<Togglable buttonLabel='login'>
+							<Login />
+						</Togglable>
+					</div>
+				) : (
+					<div>
+						<Link style={padding} to='/'>
+							Home
+						</Link>
+						<Link style={padding} to='/users'>
+							Users
+						</Link>
+						<p>
+							{user.name} logged-in{' '}
+							<button
+								onClick={() => {
+									dispatch(logout());
+									window.localStorage.removeItem('loggedUser');
+								}}
+							>
+								Log Out
+							</button>
+						</p>
+					</div>
+				)}
 
 				<Switch>
 					<Route path='/blogs/:id'>
@@ -95,6 +98,11 @@ const App = () => {
 						<Users />
 					</Route>
 					<Route path='/'>
+						{user === null ? null : (
+							<Togglable buttonLabel='New blog' ref={blogFormRef}>
+								<NewBlogForm setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
+							</Togglable>
+						)}
 						<h2>blogs</h2>
 						{blogs
 							.sort((a, b) => b.likes - a.likes)
