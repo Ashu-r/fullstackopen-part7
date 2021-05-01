@@ -19,7 +19,7 @@ export const addLike = (blog) => {
 		console.log(blog);
 		console.log(likedBlog);
 		dispatch({
-			type: 'ADD_LIKE',
+			type: 'UPDATE',
 			payload: { ...likedBlog, user: blog.user },
 		});
 	};
@@ -47,6 +47,21 @@ export const deleteBlog = (blog) => {
 	};
 };
 
+export const addComment = (blog, comment) => {
+	return async (dispatch) => {
+		const blogWithCOmment = await blogService.addComment({
+			...blog,
+			comments: blog.comments.concat(comment),
+		});
+		console.log(blog);
+		console.log(blogWithCOmment);
+		dispatch({
+			type: 'UPDATE',
+			payload: { ...blogWithCOmment, user: blog.user },
+		});
+	};
+};
+
 const reducer = (state = [], action) => {
 	switch (action.type) {
 		case 'NEW_BLOG': {
@@ -54,9 +69,9 @@ const reducer = (state = [], action) => {
 		}
 		case 'INIT_BLOGS':
 			return action.data;
-		case 'ADD_LIKE': {
-			const likedBlog = action.payload;
-			return state.map((blog) => (blog.id !== likedBlog.id ? blog : likedBlog));
+		case 'UPDATE': {
+			const updatedBlog = action.payload;
+			return state.map((blog) => (blog.id !== updatedBlog.id ? blog : updatedBlog));
 		}
 		case 'DELETE_BLOG': {
 			const { deletedBlog } = action;

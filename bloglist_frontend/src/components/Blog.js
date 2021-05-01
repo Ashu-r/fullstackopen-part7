@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { initializeBlogs, addLike, deleteBlog } from '../reducers/blogReducer';
+import { initializeBlogs, addLike, deleteBlog, addComment } from '../reducers/blogReducer';
 import { useParams, useHistory } from 'react-router-dom';
 
 const Blog = () => {
@@ -19,6 +19,44 @@ const Blog = () => {
 	if (!blog) {
 		return null;
 	}
+
+	const Comment = () => {
+		const [comment, setComment] = useState('');
+		const blogComment = blog.comments;
+		const handleComment = async (event) => {
+			console.log(blogComment);
+			event.preventDefault();
+			try {
+				dispatch(addComment(blog, comment));
+				setComment('');
+			} catch (exception) {
+				console.log(exception);
+			}
+		};
+		return (
+			<div>
+				<form onSubmit={handleComment}>
+					<input
+						placeholder='Add Comment'
+						value={comment}
+						onChange={({ target }) => {
+							setComment(target.value);
+						}}
+					></input>
+					<button type='submit'>Add</button>
+				</form>
+				<div>
+					{blogComment ? (
+						<ul>
+							{blogComment.map((comment) => (
+								<li key={comment}>{comment}</li>
+							))}
+						</ul>
+					) : null}
+				</div>
+			</div>
+		);
+	};
 
 	const btnStyle = {
 		backgroundColor: '#f44336',
@@ -57,6 +95,7 @@ const Blog = () => {
 				</p>
 				<DeleteBtn />
 			</div>
+			<Comment />
 		</div>
 	);
 };
