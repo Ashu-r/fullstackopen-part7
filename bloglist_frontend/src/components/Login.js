@@ -2,15 +2,14 @@ import React, { useState } from 'react';
 import { login } from '../reducers/loginReducer';
 import { newNotification } from '../reducers/notificationReducer';
 import { useDispatch } from 'react-redux';
+import { Form, Input, Button } from 'antd';
 
 const Login = () => {
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
 	const dispatch = useDispatch();
 
-	const handleLogin = async (event) => {
-		event.preventDefault();
-
+	const handleLogin = async () => {
 		try {
 			dispatch(
 				login({
@@ -30,19 +29,37 @@ const Login = () => {
 		}
 	};
 	return (
-		<form onSubmit={handleLogin}>
-			<div>
-				username
-				<input id='username' type='text' value={username} name='Username' onChange={({ target }) => setUsername(target.value)} />
-			</div>
-			<div>
-				password
-				<input id='password' type='password' value={password} name='Password' onChange={({ target }) => setPassword(target.value)} />
-			</div>
-			<button id='login-button' type='submit'>
-				login
-			</button>
-		</form>
+		<Form onFinish={handleLogin}>
+			<Form.Item
+				label='Username'
+				name='username'
+				rules={[
+					{
+						required: true,
+						message: 'Please input your username!',
+					},
+				]}
+			>
+				<Input value={username} id='username' name='username' onChange={({ target }) => setUsername(target.value)} />
+			</Form.Item>
+			<Form.Item
+				label='Password'
+				name='password'
+				rules={[
+					{
+						required: true,
+						message: 'Please input your password!',
+					},
+				]}
+			>
+				<Input.Password value={password} id='password' name='password' onChange={({ target }) => setPassword(target.value)} />
+			</Form.Item>
+			<Form.Item>
+				<Button type='primary' htmlType='submit'>
+					Submit
+				</Button>
+			</Form.Item>
+		</Form>
 	);
 };
 

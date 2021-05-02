@@ -12,7 +12,7 @@ import { initializeBlogs } from './reducers/blogReducer';
 import { autoLogin, logout } from './reducers/loginReducer';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import 'antd/dist/antd.css';
-import { Layout, Menu, PageHeader, Space, Button, Breadcrumb, Pagination } from 'antd';
+import { Layout, Menu, PageHeader, List, Divider, Button, Breadcrumb, Pagination } from 'antd';
 const { Header, Content, Footer } = Layout;
 import './App.css';
 
@@ -44,13 +44,23 @@ const App = () => {
 		}
 	}, [user]);
 
+	const Blogs = () => {
+		return blogs
+			.sort((a, b) => b.likes - a.likes)
+			.map((blog) => (
+				<div style={blogStyle} key={blog.id}>
+					<Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+				</div>
+			));
+	};
+
 	const blogStyle = {
 		padding: '15px',
 		border: '2px solid #5C6BC0',
 		// display:'flex',
 		// 'justify-content': 'flex-start'
 	};
-	const padding = { padding: 5, color: 'white' };
+	const padding = { padding: 5 };
 
 	return (
 		<div>
@@ -71,11 +81,6 @@ const App = () => {
 										Users
 									</Link>
 								</Menu.Item>
-								<Menu.Item key='login'>
-									<Togglable buttonLabel='login'>
-										<Login />
-									</Togglable>
-								</Menu.Item>
 							</Menu>
 						) : (
 							<Menu theme='dark' mode='horizontal' defaultSelectedKeys={['home']}>
@@ -91,7 +96,7 @@ const App = () => {
 									</Link>
 								</Menu.Item>
 
-								<span style={padding}>{user.name} logged-in </span>
+								<span className='loggedIn'>{user.name} logged-in </span>
 								<Menu.Item
 									danger='true'
 									key='logout'
@@ -106,7 +111,13 @@ const App = () => {
 						)}
 					</Header>
 
-					<Content>
+					<Content
+						style={{
+							margin: '24px 16px',
+							padding: 24,
+							minHeight: 280,
+						}}
+					>
 						<Switch>
 							<Route path='/blogs/:id'>
 								<Blog />
@@ -126,21 +137,30 @@ const App = () => {
 											<Togglable buttonLabel='New blog' ref={blogFormRef}>
 												<NewBlogForm setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
 											</Togglable>
-										) : null,
+										) : (
+											<Togglable buttonLabel='login'>
+												<Login />
+											</Togglable>
+										),
 									]}
 								/>
-								,
-								{blogs
-									.sort((a, b) => b.likes - a.likes)
-									.map((blog) => (
-										<div style={blogStyle} key={blog.id}>
-											<Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+								,{/* <Blogs /> */}
+								<List
+									itemLayout='horizontal'
+									dataSource={blogs.sort((a, b) => b.likes - a.likes)}
+									renderItem={(blog) => (
+										<div>
+											<List.Item style={{ backgroundColor: '#87e8de', paddingLeft: '1.4rem' }}>
+												<List.Item.Meta title={<Link to={`/blogs/${blog.id}`}>{blog.title}</Link>} />
+											</List.Item>
+											<Divider />
 										</div>
-									))}
+									)}
+								/>
 							</Route>
 						</Switch>
 					</Content>
-					<Pagination defaultCurrent={1} total={50} />
+					<Pagination hideOnSinglePage='true' defaultCurrent={1} total={50} />
 				</Router>
 			</Layout>
 		</div>
