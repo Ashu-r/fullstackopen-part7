@@ -12,8 +12,8 @@ import { initializeBlogs } from './reducers/blogReducer';
 import { autoLogin, logout } from './reducers/loginReducer';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import 'antd/dist/antd.css';
-import { Layout, Menu, PageHeader, List, Divider, Button, Breadcrumb, Pagination } from 'antd';
-const { Header, Content, Footer } = Layout;
+import { Layout, Menu, PageHeader, List, Divider } from 'antd';
+const { Header, Content } = Layout;
 import './App.css';
 
 const App = () => {
@@ -160,7 +160,6 @@ const App = () => {
 							</Route>
 						</Switch>
 					</Content>
-					<Pagination hideOnSinglePage='true' defaultCurrent={1} total={50} />
 				</Router>
 			</Layout>
 		</div>
