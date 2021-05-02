@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { newNotification } from '../reducers/notificationReducer';
 import { createBlog } from '../reducers/blogReducer';
+import { Button } from 'antd';
 
 const NewBlogForm = ({ blogFormRef }) => {
 	const [title, settitle] = useState('');
@@ -73,7 +74,7 @@ const NewBlogForm = ({ blogFormRef }) => {
 					></input>
 				</div>{' '}
 				<br />
-				<button type='submit'>Add</button>
+				<Button htmlType='submit'>Add</Button>
 			</form>
 		</div>
 	);

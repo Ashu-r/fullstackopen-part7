@@ -11,6 +11,10 @@ import Togglable from './components/Togglable';
 import { initializeBlogs } from './reducers/blogReducer';
 import { autoLogin, logout } from './reducers/loginReducer';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
+import 'antd/dist/antd.css';
+import { Layout, Menu, PageHeader, Space, Button, Breadcrumb, Pagination } from 'antd';
+const { Header, Content, Footer } = Layout;
+import './App.css';
 
 const App = () => {
 	const dispatch = useDispatch();
@@ -46,74 +50,99 @@ const App = () => {
 		// display:'flex',
 		// 'justify-content': 'flex-start'
 	};
-	const padding = { padding: 5 };
+	const padding = { padding: 5, color: 'white' };
 
 	return (
 		<div>
 			<Notification errorMessage={errorMessage} />
-			<Router>
-				{user === null ? (
-					<div>
-						<Link style={padding} to='/'>
-							Home
-						</Link>
-						<Link style={padding} to='/users'>
-							Users
-						</Link>
+			<Layout className='layout'>
+				<Router>
+					<Header>
+						{user === null ? (
+							<Menu theme='dark' mode='horizontal' defaultSelectedKeys={['home']}>
+								<Menu.Item key='home'>
+									<Link style={padding} to='/'>
+										Home
+									</Link>
+								</Menu.Item>
 
-						<Togglable buttonLabel='login'>
-							<Login />
-						</Togglable>
-					</div>
-				) : (
-					<div>
-						<Link style={padding} to='/'>
-							Home
-						</Link>
-						<Link style={padding} to='/users'>
-							Users
-						</Link>
-						<p>
-							{user.name} logged-in{' '}
-							<button
-								onClick={() => {
-									dispatch(logout());
-									window.localStorage.removeItem('loggedUser');
-								}}
-							>
-								Log Out
-							</button>
-						</p>
-					</div>
-				)}
+								<Menu.Item key='users'>
+									<Link style={padding} to='/users'>
+										Users
+									</Link>
+								</Menu.Item>
+								<Menu.Item key='login'>
+									<Togglable buttonLabel='login'>
+										<Login />
+									</Togglable>
+								</Menu.Item>
+							</Menu>
+						) : (
+							<Menu theme='dark' mode='horizontal' defaultSelectedKeys={['home']}>
+								<Menu.Item key='home'>
+									<Link style={padding} to='/'>
+										Home
+									</Link>
+								</Menu.Item>
 
-				<Switch>
-					<Route path='/blogs/:id'>
-						<Blog />
-					</Route>
-					<Route path='/users/:id'>
-						<User />
-					</Route>
-					<Route path='/users'>
-						<Users />
-					</Route>
-					<Route path='/'>
-						{user === null ? null : (
-							<Togglable buttonLabel='New blog' ref={blogFormRef}>
-								<NewBlogForm setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
-							</Togglable>
+								<Menu.Item key='users'>
+									<Link style={padding} to='/users'>
+										Users
+									</Link>
+								</Menu.Item>
+
+								<span style={padding}>{user.name} logged-in </span>
+								<Menu.Item
+									danger='true'
+									key='logout'
+									onClick={() => {
+										dispatch(logout());
+										window.localStorage.removeItem('loggedUser');
+									}}
+								>
+									Log Out
+								</Menu.Item>
+							</Menu>
 						)}
-						<h2>blogs</h2>
-						{blogs
-							.sort((a, b) => b.likes - a.likes)
-							.map((blog) => (
-								<div style={blogStyle} key={blog.id}>
-									<Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
-								</div>
-							))}
-					</Route>
-				</Switch>
-			</Router>
+					</Header>
+
+					<Content>
+						<Switch>
+							<Route path='/blogs/:id'>
+								<Blog />
+							</Route>
+							<Route path='/users/:id'>
+								<User />
+							</Route>
+							<Route path='/users'>
+								<Users />
+							</Route>
+							<Route path='/'>
+								<PageHeader
+									className='site-page-header'
+									title='Blogs'
+									footer={[
+										user ? (
+											<Togglable buttonLabel='New blog' ref={blogFormRef}>
+												<NewBlogForm setErrorMessage={setErrorMessage} blogFormRef={blogFormRef} />
+											</Togglable>
+										) : null,
+									]}
+								/>
+								,
+								{blogs
+									.sort((a, b) => b.likes - a.likes)
+									.map((blog) => (
+										<div style={blogStyle} key={blog.id}>
+											<Link to={`/blogs/${blog.id}`}>{blog.title}</Link>
+										</div>
+									))}
+							</Route>
+						</Switch>
+					</Content>
+					<Pagination defaultCurrent={1} total={50} />
+				</Router>
+			</Layout>
 		</div>
 	);
 };
